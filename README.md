@@ -3,7 +3,7 @@ Subpixel Temperature Estimation by Information Transfer with Adaptive Ensemble E
 
 Our tested the code on the ASTER data.  
 Before running the main code, you should generate the data by the generate_data.m  
-Then run the mian_AEELM.m  
+Then run the main_AEELM.m  
 
 Citation:  
 If you use this library for your publications, please cite it as:  
