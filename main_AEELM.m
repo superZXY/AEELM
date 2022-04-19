@@ -1,10 +1,10 @@
-%% I. Çå¿Õ»·¾³±äÁ¿
+%% I. æ¸…ç©ºç¯å¢ƒå˜é‡
 clear all
 clc
 close all
-%% II. ÑµÁ·¼¯/²âÊÔ¼¯²úÉú
+%% II. è®­ç»ƒé›†/æµ‹è¯•é›†äº§ç”Ÿ
 %%
-% 1. µ¼ÈëÊı¾İ
+% 1. å¯¼å…¥æ•°æ®
 % load train_g22.mat;
 load coff_SD_L1B.mat;%load infrared data
 load('SD_AST_L1B_T.mat');%load land surface temperature
@@ -12,11 +12,11 @@ load('SD_AST_L1B_T.mat');%load land surface temperature
 reshape_coff = reshape(coff_SD_L1B,coff_x*coff_y, coff_z);
 reshape_T = reshape(T(11:end-10,110:670,:),coff_x*coff_y,1);
 figure,imagesc(T(11:end-10,110:670,:));
-colormap(jet),title('ÎÂ¶È·´Ñİ½á¹û'),colorbar;
+colormap(jet),title('æ¸©åº¦åæ¼”ç»“æœ'),colorbar;
 clear T;
 pos5 = reshape_coff';
 tol5 = reshape_T';
-% ²âÊÔ¼¯¡ª¡ª¸öÑù±¾
+% æµ‹è¯•é›†â€”â€”ä¸ªæ ·æœ¬
 
 
 NDVI_line = pos5(10,:);
@@ -42,7 +42,7 @@ T_test4 = tol5(NDVI_0_5);
 %%
 % nc = 11;
 k=1;gate1=1;gate2=1;gate3=1;gate4=1;gate5=1;
-% 2. Ëæ»ú²úÉúÑµÁ·¼¯ºÍ²âÊÔ¼¯
+% 2. éšæœºäº§ç”Ÿè®­ç»ƒé›†å’Œæµ‹è¯•é›†
 % for ii = 1:nc
 ii=1;
 while 1
@@ -52,7 +52,7 @@ while 1
     temp3 = randperm(size(pos5(NDVI_0_2),2));
     temp4 = randperm(size(pos5(NDVI_0_5),2));
 %     temp5 = randperm(size(pos5(NDVI_1),2));
-    % ÑµÁ·¼¯¡ª¡ª1200¸öÑù±¾
+    % è®­ç»ƒé›†â€”â€”1200ä¸ªæ ·æœ¬
     %%
     P_train1 = pos5([1:10,15,17],temp1(1:sqrt(size(temp1,2))));%NDVI<-0.2
     T_train1 = tol5(:,temp1(1:sqrt(size(temp1,2))));
@@ -64,9 +64,9 @@ while 1
     T_train4 = tol5(:,temp4(1:sqrt(size(temp4,2))));
 %     P_train5 = pos5([1:10,12,13,17],temp5(1:sqrt(size(temp5,2))));%0.5<NDVI<1
 %     T_train5 = tol5(:,temp5(1:sqrt(size(temp5,2))));
-    %% III. Êı¾İ¹éÒ»»¯
+    %% III. æ•°æ®å½’ä¸€åŒ–
     %%
-    % 1. ÑµÁ·¼¯
+    % 1. è®­ç»ƒé›†
     [Pn_train1,inputps1] = mapminmax(P_train1);
     Pn_test1 = mapminmax('apply',P_test1,inputps1);
     [Pn_train2,inputps2] = mapminmax(P_train2);
@@ -78,7 +78,7 @@ while 1
 %     [Pn_train5,inputps5] = mapminmax(P_train5);
 %     Pn_test5 = mapminmax('apply',P_test5,inputps5);
     %%
-    % 2. ²âÊÔ¼¯
+    % 2. æµ‹è¯•é›†
     [Tn_train1,outputps1] = mapminmax(T_train1);
     Tn_test1 = mapminmax('apply',T_test1,outputps1);
     [Tn_train2,outputps2] = mapminmax(T_train2);
@@ -90,13 +90,13 @@ while 1
 %     [Tn_train5,outputps5] = mapminmax(T_train5);
 %     Tn_test5 = mapminmax('apply',T_test5,outputps5);
 
-    %% IV. ELM´´½¨/ÑµÁ·
+    %% IV. ELMåˆ›å»º/è®­ç»ƒ
     [Beta01,out_w1,IW1,B1,LW1,TF1,TYPE1] = elmtrain(Pn_train1,Tn_train1,floor(log2(size(Pn_train1,2))),'softplus',0);
     [Beta02,out_w2,IW2,B2,LW2,TF2,TYPE2] = elmtrain(Pn_train2,Tn_train2,floor(log2(size(Pn_train2,2))),'softplus',0);
     [Beta03,out_w3,IW3,B3,LW3,TF3,TYPE3] = elmtrain(Pn_train3,Tn_train3,floor(log2(size(Pn_train3,2))),'softplus',0);
     [Beta04,out_w4,IW4,B4,LW4,TF4,TYPE4] = elmtrain(Pn_train4,Tn_train4,floor(log2(size(Pn_train4,2))),'softplus',0);
 %     [Beta05,out_w5,IW5,B5,LW5,TF5,TYPE5] = elmtrain(Pn_train5,Tn_train5,floor(log2(size(Pn_train5,2))),'softplus',0);
-    %% V. ELM·ÂÕæ²âÊÔ
+    %% V. ELMä»¿çœŸæµ‹è¯•
     tn_sim1 = elmpredict(Pn_test1,IW1,B1,LW1,TF1,TYPE1);
     tn_sim2 = elmpredict(Pn_test2,IW2,B2,LW2,TF2,TYPE2);
     tn_sim3 = elmpredict(Pn_test3,IW3,B3,LW3,TF3,TYPE3);
@@ -104,7 +104,7 @@ while 1
 %     tn_sim5 = elmpredict(Pn_test5,IW5,B5,LW5,TF5,TYPE5);
 
     %%
-    % 1. ·´¹éÒ»»¯
+    % 1. åå½’ä¸€åŒ–
     T_sim1(ii,:) = mapminmax('reverse',tn_sim1,outputps1);
     T_sim2(ii,:) = mapminmax('reverse',tn_sim2,outputps2);
     T_sim3(ii,:) = mapminmax('reverse',tn_sim3,outputps3);
@@ -208,37 +208,37 @@ for i = 1:size(result_T,1)
     end
 end
 figure,imagesc(result_T);
-colormap(jet),title('ÎÂ¶ÈÔ¤²â½á¹û'),colorbar;
+colormap(jet),title('æ¸©åº¦é¢„æµ‹ç»“æœ'),colorbar;
 % save T_sim.mat T_sim
-%% VI. ½á¹û¶Ô±È
+%% VI. ç»“æœå¯¹æ¯”
 clear T_sim;
 T_sim = reshape(result_T,1,coff_x*coff_y);
 result = [T_test' T_sim'];
 
 %%
-% 1. Ïà¶ÔÎó²îerror
+% 1. ç›¸å¯¹è¯¯å·®error
 error = abs(T_sim - T_test)./T_test;
 error2 = abs(T_sim - T_test);
 
 
 
 %%
-% 1. ¾ù·½Îó²î
+% 1. å‡æ–¹è¯¯å·®
 E = mse(T_sim - T_test);
 MSE = sqrt(mse(T_sim - T_test));
 %%
-% 2. ¾ö¶¨ÏµÊı
+% 2. å†³å®šç³»æ•°
 N = length(T_test);
 R2=(N*sum(T_sim.*T_test)-sum(T_sim)*sum(T_test))^2/((N*sum((T_sim).^2)-(sum(T_sim))^2)*(N*sum((T_test).^2)-(sum(T_test))^2)); 
 
-%% VII. »æÍ¼
+%% VII. ç»˜å›¾
 figure,plot(error);
 xlabel('x axis');
 ylabel('y axis');
 legend('error');
-xlabel('Ô¤²âÑù±¾')
-ylabel('Îó²î')
-string = {'Á¦¾ØÔ¤²âÎó²î(ELM)'};
+xlabel('é¢„æµ‹æ ·æœ¬')
+ylabel('è¯¯å·®')
+string = {'åŠ›çŸ©é¢„æµ‹è¯¯å·®(ELM)'};
 title(string)
 
 figure,plot(1:N,T_test,'r-*',1:N,T_sim,'b:o')
@@ -246,10 +246,10 @@ figure,plot(1:N,T_test,'r-*',1:N,T_sim,'b:o')
 % plot(T_test',T_sim','b:o')
 
 grid on
-legend('ÕæÊµÖµ','Ô¤²âÖµ')
-xlabel('Ô¤²âÑù±¾')
-ylabel('Á¦¾ØÖµ')
-string = {'²âÊÔ¼¯Á¦¾ØÔ¤²â½á¹û¶Ô±È(ELM)';['(mse = ' num2str(E) ' R^2 = ' num2str(R2) ')']};
+legend('çœŸå®å€¼','é¢„æµ‹å€¼')
+xlabel('é¢„æµ‹æ ·æœ¬')
+ylabel('åŠ›çŸ©å€¼')
+string = {'æµ‹è¯•é›†åŠ›çŸ©é¢„æµ‹ç»“æœå¯¹æ¯”(ELM)';['(mse = ' num2str(E) ' R^2 = ' num2str(R2) ')']};
 title(string)
 
 
@@ -265,14 +265,14 @@ for i = 1:size(aa,1)
     end
 end
 
-cut_pre = aa;  %500*500Ô¤²âÎÂ¶È·½Õó
-cut_pre_line = reshape(cut_pre,size(cut_pre,1)*size(cut_pre,2),1);   %ÎÂ¶ÈÔ¤²âÖµ
+cut_pre = aa;  %500*500é¢„æµ‹æ¸©åº¦æ–¹é˜µ
+cut_pre_line = reshape(cut_pre,size(cut_pre,1)*size(cut_pre,2),1);   %æ¸©åº¦é¢„æµ‹å€¼
 true = reshape(tol5,coff_x,coff_y);
 sqr_true = true;
-true_line =  reshape(sqr_true,size(sqr_true,1)*size(sqr_true,2),1); %ÎÂ¶ÈÕæÊµÖµ
+true_line =  reshape(sqr_true,size(sqr_true,1)*size(sqr_true,2),1); %æ¸©åº¦çœŸå®å€¼
 figure,plot(cut_pre_line,true_line,'*');
-xlabel('Ô¤²âÖµ')
-ylabel('ÕæÊµÖµ')
+xlabel('é¢„æµ‹å€¼')
+ylabel('çœŸå®å€¼')
 figure,imshow(sqr_true,[]);
 figure,imshow(cut_pre,[]);
 cc = abs(cut_pre-sqr_true);
